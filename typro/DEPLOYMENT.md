@@ -2,6 +2,52 @@
 
 This guide provides instructions for deploying the Smart AI Resume Analyzer application in various environments, with a focus on resolving Chrome webdriver issues.
 
+## Recommended CI/CD: GitHub Pages + Streamlit Cloud
+
+This repository uses a two-part deployment model:
+
+- GitHub Pages hosts a static landing page from `typro/docs`
+- Streamlit Community Cloud hosts the live Python application
+
+Why this split is required:
+
+- GitHub Pages can only serve static files
+- This project needs a running Python process (`streamlit run app.py`), so it must run on a Python host
+
+### GitHub Actions Workflows
+
+At repository root (`C:\TYY`):
+
+- `.github/workflows/ci.yml`
+   - Runs on push/PR to `main`
+   - Installs `typro/requirements.txt`
+   - Compiles Python files for syntax validation
+
+- `.github/workflows/pages.yml`
+   - Runs on push to `main` when `typro/docs/**` changes
+   - Publishes `typro/docs` to GitHub Pages
+
+### One-time GitHub Repository Settings
+
+1. Go to **Settings → Pages**
+2. Under **Build and deployment**, choose **GitHub Actions**
+3. Ensure your default branch is `main`
+
+### Streamlit Cloud Setup
+
+1. Open Streamlit Community Cloud and create a new app from your GitHub repo
+2. Set **Main file path** to `typro/app.py` (or `typro/run_app.py` if preferred)
+3. Add required secrets in Streamlit **Secrets** UI (do not commit secrets in repo)
+4. Keep `typro/packages.txt` and `typro/requirements.txt` in sync with runtime needs
+
+### Update the GitHub Pages App Link
+
+After Streamlit deploys, edit:
+
+- `typro/docs/index.html`
+
+Replace the placeholder `https://share.streamlit.io/` link with your actual Streamlit app URL.
+
 ## Local Deployment
 
 ### Prerequisites
